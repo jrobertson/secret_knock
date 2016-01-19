@@ -4,9 +4,9 @@ To get started you will need to refer to the secret knock lookup table as show b
 
 
 <pre>
-a: 4     f: 18    k: 25    p: 22    u: 15    z: 29    5: 35              0: 41
-b: 23    g: 19    l: 13    q: 28    v: 24    1: 31    6: 36        [space]: 1
-c: 14    h: 9     m: 16    r: 11    w: 17    2: 32    7: 37    <backspace>: 42
+a: 4     f: 18    k: 25    p: 22    u: 15    z: 29    5: 35           0: 41
+b: 23    g: 19    l: 13    q: 28    v: 24    1: 31    6: 36     [space]: 1
+c: 14    h: 9     m: 16    r: 11    w: 17    2: 32    7: 37 &lt;backspace&gt;: 42
 d: 12    i: 6     n: 7     s: 8     x: 27    3: 33    8: 38    
 e: 2     j: 26    o: 5     t: 3     y: 21    4: 34    9: 39 
 </pre>
@@ -14,22 +14,22 @@ e: 2     j: 26    o: 5     t: 3     y: 21    4: 34    9: 39
 
 A letter with 2 numbers means that you must knock the specified number of times, then pause for roughly half a second. There is no time limit on how long you take before knocking out your next letter.
 
-require 'io/console'
-require 'secret_knock'
+    require 'io/console'
+    require 'secret_knock'
 
 
-c = ' '
+    c = ' '
 
-sk = SecretKnock.new
+    sk = SecretKnock.new
 
-sk.listen do |x|
+    sk.listen do |x|
 
-  puts 'press the space bar to knock, or any other key to exit'
-  x.knock while (c = $stdin.getch ) == ' '
+      puts 'press the space bar to knock, or any other key to exit'
+      x.knock while (c = $stdin.getch ) == ' '
 
-end
+    end
 
-puts "Your message was " + sk.message
+    puts "Your message was " + sk.message
 
 Note: While knocking, if you discover that you have knocked out the wrong letter, there is a special knock that acts as a backspace.
 
