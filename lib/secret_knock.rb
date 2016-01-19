@@ -5,7 +5,7 @@
 
 class SecretKnock
 
-  attr_reader :h, :message
+  attr_reader :h, :message, :listening
 
   def initialize(verbose: true, external: nil)
 
@@ -42,11 +42,26 @@ class SecretKnock
     @hb = h.invert
 
     @short_delay, @long_delay = 0.35, 0.9 # seconds
+    @listening = false
 
   end
 
   def autoknock(s)
     playback knockerize(s)
+  end
+  
+  def detect(timeout: 2, repeat: true)
+    
+    listen
+    
+    Thread.new do
+
+      sleep 0.2 while @t + timeout > Time.now or @a.length <= 1
+      msg = decipher()
+      on_timeout msg
+      @external.message msg if @external
+      detect(timeout: timeout, repeat: repeat) if repeat
+    end
   end
 
   def knocked()
@@ -98,7 +113,9 @@ class SecretKnock
 
     @t = Time.now
     @i = 1
-    @a = [0]
+    @a = []    
+    
+    @listening = true
 
     if block_given? then
       yield self
@@ -112,6 +129,10 @@ class SecretKnock
     puts "\n*pause*\n\n" if @verbose
     sleep @long_delay + 0.1    
 
+  end
+  
+  def on_timeout(msg='')
+    # override this method if you wish
   end
 
   alias pause long_pause
@@ -137,10 +158,19 @@ class SecretKnock
 
   def stop_listening()
 
-    @message = @a[2..-1].join.gsub(/(\d{2})(\d)/,'\1,\2').split(',')\
+    @listening = false
+    @message = decipher()
+
+  end
+  
+  private
+   
+  def decipher()
+    
+    @a.join.gsub(/(\d{2})(\d)/,'\1,\2').split(',')\
                                                           .inject([]) do |r, x|
       (x != '42' ? r << @hb[x.to_i] : r[0..-2])
     end.join
-
   end
+  
 end
