@@ -60,10 +60,13 @@ class SecretKnock
     else
 
       @a << ',' if t1 > @t + @long_delay
+      puts '' if @verbose
       @i = 1
       @a << 0
 
     end
+    
+    print @i.to_s + ' ' if @verbose
 
     @a[-1] = @i
 
@@ -141,4 +144,3 @@ class SecretKnock
 
   end
 end
-
