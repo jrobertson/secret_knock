@@ -7,7 +7,8 @@ class SecretKnock
 
   attr_reader :h, :message, :listening
 
-  def initialize(verbose: true, external: nil)
+  def initialize(verbose: true, external: nil, 
+                 short_delay: 0.35, long_delay: 0.9)
 
     @verbose, @external = verbose, external
 
@@ -21,7 +22,7 @@ class SecretKnock
     i = 0
     a = ([' '] + keys + ('1'..'9').to_a + ['0','<backspace>']).map do |x|
       i += 1
-      i += 1 if i.to_s[-1] == '0'
+      i += 1 while i.to_s[-1].to_i > 6 or i.to_s[-1].to_i == 0
       [x, i]
     end
 
@@ -30,18 +31,19 @@ class SecretKnock
 
     @h = (a.take(27).sort_by(&:first) + a[27..-1]).to_h
 
-    #=> h contains the following
+    #>  h contains the following
     # {
-    #   " "=>1, "a"=>4, "b"=>23, "c"=>14, "d"=>12, "e"=>2, "f"=>18, "g"=>19,
-    #   "h"=>9, "i"=>6, "j"=>26, "k"=>25, "l"=>13, "m"=>16, "n"=>7, "o"=>5, 
-    #   "p"=>22, "q"=>28, "r"=>11, "s"=>8, "t"=>3, "u"=>15, "v"=>24, "w"=>17, 
-    #   "x"=>27, "y"=>21, "z"=>29, "1"=>31, "2"=>32, "3"=>33, "4"=>34, "5"=>35,
-    #   "6"=>36, "7"=>37, "8"=>38, "9"=>39, "0"=>41, "<backspace>"=>42
+    #    " "=>1, "a"=>4, "b"=>33, "c"=>21, "d"=>15, "e"=>2, "f"=>25, "g"=>26,
+    #    "h"=>13, "i"=>6, "j"=>36, "k"=>35, "l"=>16, "m"=>23, "n"=>11, "o"=>5, 
+    #    "p"=>32, "q"=>42, "r"=>14, "s"=>12, "t"=>3, "u"=>22, "v"=>34, "w"=>24, 
+    #    "x"=>41, "y"=>31, "z"=>43, "1"=>44, "2"=>45, "3"=>46, "4"=>51, "5"=>52, 
+    #    "6"=>53, "7"=>54, "8"=>55, "9"=>56, "0"=>61, "<backspace>"=>62
     # }
+    
 
     @hb = h.invert
 
-    @short_delay, @long_delay = 0.35, 0.9 # seconds
+    @short_delay, @long_delay = short_delay, long_delay # seconds
     @listening = false
 
   end
