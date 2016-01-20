@@ -30,6 +30,7 @@ class SecretKnock
     #   hash lookup and inverted hash lookup
 
     @h = (a.take(27).sort_by(&:first) + a[27..-1]).to_h
+    @h.merge!({"7" => 7, "8" => 8, "9" => 9})
 
     #>  h contains the following
     # {
@@ -37,9 +38,10 @@ class SecretKnock
     #    "h"=>13, "i"=>6, "j"=>36, "k"=>35, "l"=>16, "m"=>23, "n"=>11, "o"=>5, 
     #    "p"=>32, "q"=>42, "r"=>14, "s"=>12, "t"=>3, "u"=>22, "v"=>34, "w"=>24, 
     #    "x"=>41, "y"=>31, "z"=>43, "1"=>44, "2"=>45, "3"=>46, "4"=>51, "5"=>52, 
-    #    "6"=>53, "7"=>54, "8"=>55, "9"=>56, "0"=>61, "<backspace>"=>62
+    #    "6"=>53, "7"=>7, "8"=>8, "9"=>9, "0"=>61, "<backspace>"=>62
     # }
-    
+
+
 
     @hb = h.invert
 
@@ -85,8 +87,8 @@ class SecretKnock
     
     print @i.to_s + ' ' if @verbose
 
-    @a[-1] = @i
-
+    @a[-1] = @i if @a.any?
+    
     @t = Time.now
 
     @external.knock if @external
