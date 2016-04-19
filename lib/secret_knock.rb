@@ -55,15 +55,31 @@ class SecretKnock
   end
   
   def detect(timeout: 2, repeat: true)
-    
+
     listen
     
     Thread.new do
-
+      
+      if @external and @external.respond_to? :on_listening then
+        @external.on_listening
+      end
+      
       sleep 0.2 while @t + timeout > Time.now or @a.length <= 1
+      
+      if @external and @external.respond_to? :on_processing then
+        @external.on_processing
+      end
+      
       msg = decipher()
       on_timeout msg
-      @external.message msg if @external
+      
+      begin
+        @external.message msg if @external
+      rescue
+        puts
+        puts "\rSecretKnock @external notifier " +  ($!).inspect
+      end
+
       detect(timeout: timeout, repeat: repeat) if repeat
     end
   end
@@ -99,8 +115,6 @@ class SecretKnock
   def knocks(n)
 
     n.times { knocked }
-
-    puts (['knock'] * n).join ', ' if @verbose
     short_pause
 
   end
@@ -171,10 +185,10 @@ class SecretKnock
    
   def decipher()
     
-    @a.join.gsub(/(\d{2})(\d)/,'\1,\2').split(',')\
-                                                          .inject([]) do |r, x|
+    @a.join.gsub(/(\d{2})(\d)/,'\1,\2').split(',').inject([]) do |r, x|
       (x != '42' ? r << @hb[x.to_i] : r[0..-2])
-    end.join
+    end.join    
+
   end
   
 end
