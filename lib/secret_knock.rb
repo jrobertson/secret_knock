@@ -8,9 +8,9 @@ class SecretKnock
   attr_reader :h, :message, :listening
 
   def initialize(verbose: true, external: nil, 
-                 short_delay: 0.35, long_delay: 0.9)
+                 short_delay: 0.35, long_delay: 0.9, debug: false)
 
-    @verbose, @external = verbose, external
+    @verbose, @external, @debug = verbose, external, debug
 
     # ranked by frequency. see https://en.wikipedia.org/wiki/Letter_frequency
     keys = ["e", "t", "a", "o", "i", "n", "s", "h", "r", "d", "l", "c", "u", "m",
@@ -54,6 +54,7 @@ class SecretKnock
     playback knockerize(s)
   end
   
+  # listens for knocking in the background which allows the control
   def detect(timeout: 2, repeat: true)
 
     listen
@@ -108,6 +109,9 @@ class SecretKnock
     @t = Time.now
 
     @external.knock if @external
+    
+    puts '@a: ' + @a.inspect if @debug
+    
   end
 
   alias knock knocked
@@ -168,6 +172,10 @@ class SecretKnock
       
     end    
 
+  end
+  
+  def reset()
+    @a = []
   end
 
   def short_pause()
